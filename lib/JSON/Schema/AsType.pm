@@ -14,7 +14,7 @@ use List::Util qw/ reduce pairmap pairs /;
 use List::MoreUtils qw/ any all none uniq zip /;
 use Types::Standard qw/InstanceOf HashRef StrictNum Any Str ArrayRef Int Object slurpy Dict Optional slurpy /; 
 use Type::Utils;
-use LWP::Simple;
+use Mojo::UserAgent;
 use Clone 'clone';
 use Class::Load qw/ load_class /;
 
@@ -56,7 +56,7 @@ sub fetch {
 
     return $EXTERNAL_SCHEMAS{$url} if eval { $EXTERNAL_SCHEMAS{$url}->schema };
 
-    my $schema = eval { from_json LWP::Simple::get($url) };
+    my $schema = eval { from_json(Mojo::UserAgent->new->get($url)->res->text) };
 
     die "couldn't get schema from '$url'\n" unless ref $schema eq 'HASH';
 
